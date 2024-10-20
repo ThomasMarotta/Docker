@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      dockerfile: java.dockerfile
+    networks:
+      - front_back_network
+      - back_database_network
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password  
+
+  frontend:
+    build: 
+      dockerfile: nginx.dockerfile
+    networks:
+      - front_back_network 
+    ports:
+      - "1969:80"
+
+  database:
+    build: 
+      dockerfile: psql.dockerfile  
+    volumes:
+      - pg_data:/var/lib/postgresql/data 
+    networks:
+      - back_database_network  
+    environment:
+      POSTGRES_DB: Hello  
+      POSTGRES_USER: myuser  
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password  
+    secrets:
+      - db_password  
+
+networks:
+  front_back_network:
+    driver: bridge
+  back_database_network:
+    driver: bridge
+
+secrets:
+  db_password : 
+    file : passwd.txt
+
+volumes:
+  pg_data:
