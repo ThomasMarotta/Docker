@@ -1,7 +1,8 @@
 services:
   backend:
-    build:
-      dockerfile: java.dockerfile
+#    build:
+#      dockerfile: java.dockerfile
+    image: my-super-app
     networks:
       - front_back_network
       - back_database_network
@@ -11,8 +12,10 @@ services:
       - db_password  
 
   frontend:
+    depends_on:
+      - backend
     build: 
-      dockerfile: nginx.dockerfile
+      dockerfile: front/nginx.dockerfile
     networks:
       - front_back_network 
     ports:
@@ -20,7 +23,7 @@ services:
 
   database:
     build: 
-      dockerfile: psql.dockerfile  
+      dockerfile: db/psql.dockerfile  
     volumes:
       - pg_data:/var/lib/postgresql/data 
     networks:
